@@ -9,6 +9,7 @@ public class EnemyAI : MonoBehaviour
     public float speed = 5;
     private Vector3 destination;
     private int currentWaypoint;
+    public float rotSpeed = 360;
 
     public float health = 3;
     private float cHealth;
@@ -30,29 +31,39 @@ public class EnemyAI : MonoBehaviour
         if (distance <= .01f)
         {
             currentWaypoint++;
-            if (currentWaypoint >= Path.childCount-1)
+            if (currentWaypoint >= Path.childCount)
             {
                 Destroy(gameObject);
             }
-            destination = Path.GetChild(currentWaypoint).position;
+            else
+            {
+                destination = Path.GetChild(currentWaypoint).position;
+            }
         }
         else {
             transform.position = Vector3.MoveTowards(transform.position, destination, speed * Time.deltaTime);
         }
+
+
+        Vector3 dir = destination - transform.position;
+        dir.Normalize();
+
+        float zAngle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg ;
+
+        Quaternion desiredRot = Quaternion.Euler(0, 0, zAngle);
+
+        transform.rotation = Quaternion.RotateTowards(transform.rotation, desiredRot, rotSpeed * Time.deltaTime);
+
     }
 
     public void takeDamage(float damage) {
         cHealth -= damage;
         healthbar.fillAmount = cHealth / health;
         if (cHealth <= 0) {
+            GameObject.Find("Spawn").GetComponent<spawnManager>().enemiesDestroyed++;
             Destroy(gameObject);
         }
     }
 
-    private void OnCollisionEnter2D(Collision2D collision)
-    {
-        if (collision.gameObject.CompareTag("turret projectile")) {
-            takeDamage(1);
-        }
-    }
+
 }

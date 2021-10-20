@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class spawnManager : MonoBehaviour
 {
-    public Transform path;
+    public Transform[] paths;
 
     public GameObject enemy;
     public int wave;
@@ -14,7 +14,9 @@ public class spawnManager : MonoBehaviour
     private int enemyAmount;
     public int enemiesDestroyed;
 
-    public float spawnRate = .2f;
+    public float min_spawnRate = .1f;
+    public float max_spawnRate = .4f;
+    private float spawnRate;
     private float spawnTime;
     public int spawnedEnemies;
     // Start is called before the first frame update
@@ -36,8 +38,10 @@ public class spawnManager : MonoBehaviour
             {
                 readyToSpawn = true;
                 currentTime = 0;
+                enemiesDestroyed = 0;
                 wave++;
                 enemyAmount += 5;
+                spawnedEnemies = 0;
 
             }
 
@@ -49,10 +53,12 @@ public class spawnManager : MonoBehaviour
             {
                 if (spawnTime >= spawnRate)
                 {
+                    Transform path = paths[Random.Range(0, paths.Length)];
                     spawnTime = 0;
                     GameObject clone = Instantiate(enemy, transform.position, Quaternion.identity);
                     clone.GetComponent<EnemyAI>().Path = path;
                     spawnedEnemies++;
+                    spawnRate = Random.Range(min_spawnRate, max_spawnRate);
                 }
                 else
                 {
