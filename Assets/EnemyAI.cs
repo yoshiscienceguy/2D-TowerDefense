@@ -14,6 +14,7 @@ public class EnemyAI : MonoBehaviour
     public float health = 3;
     private float cHealth;
     public Image healthbar;
+    public float enemyWorth = 1;
 
 
     // Start is called before the first frame update
@@ -61,6 +62,7 @@ public class EnemyAI : MonoBehaviour
         healthbar.fillAmount = cHealth / health;
         if (cHealth <= 0) {
             GameObject.Find("Spawn").GetComponent<spawnManager>().enemiesDestroyed++;
+            GameObject.Find("Main Camera").GetComponent<wallet>().earn(enemyWorth);
             Destroy(gameObject);
         }
     }
